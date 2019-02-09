@@ -1,13 +1,11 @@
 #include "../cpu/isr.h"
-#include "../cpu/timer.h"
-#include "../drivers/keyboard.h"
+#include "../drivers/screen.h"
+#include "../libc/string.h"
 
 void main(void)
 {
     isr_install();
+    irq_install();
 
-    asm volatile("sti");
-    init_timer(50); // Comment this out to make keyboard input easier to read
-
-    init_keyboard();
+    kprint("Welcome to Exedo-OS!\n");
 }

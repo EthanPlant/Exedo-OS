@@ -1,6 +1,6 @@
 #include "screen.h"
-#include "ports.h"
-#include "../kernel/util.h"
+#include "../cpu/ports.h"
+#include "../libc/mem.h"
 
 // Declaration of private functions
 int get_cursor_offset(void);
@@ -78,13 +78,13 @@ int print_char(char c, int col, int row, char attr)
         int i;
         for (i = 1; i < MAX_ROWS; i++)
         {
-            memory_copy(get_offset(0, i) + VIDEO_ADDRESS,
-                get_offset(0, i-1) + VIDEO_ADDRESS,
+            memory_copy((u8*)get_offset(0, i) + VIDEO_ADDRESS,
+                (u8*)get_offset(0, i-1) + VIDEO_ADDRESS,
                 MAX_COLS * 2);
         }
 
         // Blank last line
-        char *last_line = get_offset(0, MAX_ROWS - 1) + VIDEO_ADDRESS;
+        char *last_line = (char*) get_offset(0, MAX_ROWS - 1) + VIDEO_ADDRESS;
         for (i = 0; i < MAX_COLS * 2; i++) last_line[i] = 0;
         
         offset -= 2 * MAX_COLS;
@@ -116,7 +116,7 @@ void clear_screen()
 {
     int screen_size = MAX_COLS * MAX_ROWS;
     int i;
-    char *screen = VIDEO_ADDRESS;
+    u8 *screen = (u8*) VIDEO_ADDRESS;
 
     for (i = 0; i < screen_size; i++)
     {
