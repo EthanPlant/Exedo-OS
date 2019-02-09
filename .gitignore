@@ -11,3 +11,5 @@
 
 # Binaries
 *.bin
+*.o
+*.elf
