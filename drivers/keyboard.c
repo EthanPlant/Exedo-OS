@@ -4,11 +4,14 @@
 #include "screen.h"
 #include "../libc/string.h"
 #include "../libc/function.h"
+#include "../kernel/kernel.h"
 
 #define BACKSPACE 0x0E
 #define ENTER 0x1C
 
 #define SC_MAX 57
+
+static char key_buffer[256];
 
 const char* sc_name [] = 
 {
@@ -32,9 +35,25 @@ static void keyboard_callback(registers_t regs)
     u8 scancode = port_byte_in(0x60);
     
     if (scancode >SC_MAX) return;
-    char letter = sc_ascii[(int) scancode];
-    char str[2] = {letter, '\0'};
-    kprint(str);
+    
+    if (scancode == BACKSPACE)
+    {
+        backspace(key_buffer);
+        kprint_backspace();
+    }
+    else if (scancode == ENTER)
+    {
+        kprint("\n");
+        user_input(key_buffer);
+        key_buffer[0] = '\0';
+    }
+    else
+    {
+        char letter = sc_ascii[(int) scancode];
+        char str[2] = {letter, '\0'};
+        append(key_buffer, letter);
+        kprint(str);
+    }
 
     UNUSED(regs);
 }
